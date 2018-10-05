@@ -65,16 +65,16 @@
 <script>
 import { Formio } from 'formiojs';
 import MenuItem from './components/MenuItem.vue';
-// import CustomComponent2 from './components/CustomComponent2.vue';
+// import CustomComponent from './components/CustomComponent.vue';
 // import { BaseComponent } from 'formiojs';
-// import { CustomComponent } from './components/form_components/customcomponent/CustomComponent.js';
-const CustomComponent = require('./components/form_components/customcomponent/CustomComponent');
+import { CustomComponent } from './components/form_components/customcomponent/CustomComponent.js';
+// const CustomComponent = require('./components/form_components/customcomponent/CustomComponent');
 
 export default {
   name: 'App',
   components: {
     'menu-item': MenuItem,
-    'custom-component': CustomComponent,
+    // 'custom-component': CustomComponent,
   },
   data() {
     return {
@@ -95,8 +95,8 @@ export default {
   mounted() {
     console.log('mounted');
     this.$store.dispatch('fetchMenus');
-    //const customComponent = new CustomComponent2();
-    Formio.registerComponent('custom-component', CustomComponent.default);
+    //const customComponent = new CustomComponent();
+    Formio.registerComponent('custom-component', CustomComponent);
     //   {
     //   fbtemplate: 'formio/formbuilder/fivestar.html',
     //   icon: 'fa fa-gavel',
