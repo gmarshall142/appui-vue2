@@ -1,11 +1,14 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
+const { SERVERPORT = 3000 } = process.env;
+const _ = require('lodash');
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    serverUrl: window.location.protocol + '//' + window.location.hostname + ':' + SERVERPORT,
     menuItems: [],
     applicationTitle: '',
     customFormData: {},
@@ -17,6 +20,7 @@ export default new Vuex.Store({
     },
   },
   getters: {
+    serverUrl: state => state.serverUrl,
     menuItems: state => state.menuItems,
     applicationTitle: state => state.applicationTitle,
     customFormData: state => state.customFormData,
@@ -62,7 +66,7 @@ export default new Vuex.Store({
     fetchMenus: (context, payload) => {
       axios({
         method: 'get',
-        url: 'http://localhost:3000/menus',
+        url: `${context.getters.serverUrl}/menus`,
       })
         .then((response) => {
           context.commit('MENUITEMS', response.data);
@@ -74,7 +78,7 @@ export default new Vuex.Store({
     fetchPage: (context, payload) => {
       axios({
         method: 'get',
-        url: `http://localhost:3000/pages/${payload.appid}/${payload.pageid}`,
+        url: `${context.getters.serverUrl}/pages/${payload.appid}/${payload.pageid}`,
       })
         .then((response) => {
           context.commit('PAGEDATA', response.data);
@@ -86,7 +90,7 @@ export default new Vuex.Store({
     fetchForm: (context, payload) => {
       axios({
         method: 'get',
-        url: `http://localhost:3000/pages/forms/${payload.appid}/${payload.pageid}`,
+        url: `${context.getters.serverUrl}/pages/forms/${payload.appid}/${payload.pageid}`,
       })
         .then((response) => {
           context.commit('PAGEDATA', response.data);
@@ -111,7 +115,7 @@ export default new Vuex.Store({
       axios({
         method: 'post',
         data: payload.data,
-        url: `http://localhost:3000/pages/form/${payload.appid}/${payload.pageid}`,
+        url: `${context.getters.serverUrl}/pages/form/${payload.appid}/${payload.pageid}`,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -127,7 +131,7 @@ export default new Vuex.Store({
       axios({
         method: 'get',
         data: payload.data,
-        url: `http://localhost:3000/pages/form/${payload.appid}/${payload.pageid}`,
+        url: `${context.getters.serverUrl}/pages/form/${payload.appid}/${payload.pageid}`,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -147,7 +151,7 @@ export default new Vuex.Store({
         axios({
           method: 'post',
           data: payload.data,
-          url: `http://localhost:3000/pages/forms/${payload.appid}/${payload.pageid}`,
+          url: `${context.getters.serverUrl}/pages/forms/${payload.appid}/${payload.pageid}`,
           headers: {
             'Content-Type': 'application/json',
           },
@@ -163,7 +167,7 @@ export default new Vuex.Store({
         axios({
           method: 'put',
           data: payload.data,
-          url: `http://localhost:3000/pages/forms/${payload.appid}/${payload.pageid}/${formId}`,
+          url: `${context.getters.serverUrl}/pages/forms/${payload.appid}/${payload.pageid}/${formId}`,
           headers: {
             'Content-Type': 'application/json',
           },
@@ -180,7 +184,7 @@ export default new Vuex.Store({
       axios({
         method: 'get',
         data: payload.data,
-        url: `http://localhost:3000/pages/forms/${payload.appid}/${payload.pageid}`,
+        url: `${context.getters.serverUrl}/pages/forms/${payload.appid}/${payload.pageid}`,
         headers: {
           'Content-Type': 'application/json',
         },

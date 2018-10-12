@@ -18,8 +18,6 @@ export default {
   data() {
     return {
       currentPath: '',
-      // formUrl: "https://gwvpsovdjeovdqa.form.io/newresource"
-      formUrl: "http://localhost:3000/pages/formio"
     };
   },
   mounted() {
