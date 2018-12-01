@@ -5,9 +5,6 @@
   </div>
 </template>
 <script type='text/javascript'>
-  window.onload = function() {
-    Formio.createForm(document.getElementById('formio'), 'https://examples.form.io/example');
-  };
 </script>
 
 <style>

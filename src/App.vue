@@ -63,11 +63,11 @@
 </template>
 
 <script>
-import { Formio } from 'formiojs';
+// import { Formio } from 'formiojs';
 import MenuItem from './components/MenuItem.vue';
 // import CustomComponent from './components/CustomComponent.vue';
 // import { BaseComponent } from 'formiojs';
-import { CustomComponent } from './components/form_components/customcomponent/CustomComponent.js';
+// import { CustomComponent } from './components/form_components/customcomponent/CustomComponent.js';
 // const CustomComponent = require('./components/form_components/customcomponent/CustomComponent');
 
 export default {
@@ -84,7 +84,7 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Application Factory',
+      title: 'Marshall Applications',
     };
   },
   computed: {
@@ -96,7 +96,7 @@ export default {
     console.log('mounted');
     this.$store.dispatch('fetchMenus');
     //const customComponent = new CustomComponent();
-    Formio.registerComponent('custom-component', CustomComponent);
+    // Formio.registerComponent('custom-component', CustomComponent);
     //   {
     //   fbtemplate: 'formio/formbuilder/fivestar.html',
     //   icon: 'fa fa-gavel',
@@ -120,3 +120,8 @@ export default {
   },
 };
 </script>
+
+<style>
+  @import 'assets/css/app.css';
+  @import 'assets/css/fonts.css';
+</style>

@@ -15,7 +15,7 @@
   <v-list-group
     v-else
     :key="item.label"
-    :group="item.id"
+    :group="String(item.id)"
     :sub-group="submenu"
     :value="false"
     no-action

@@ -4,10 +4,12 @@ import Home from './views/Home.vue';
 import About from './views/About.vue';
 import Application from './views/Application.vue';
 import Administration from './views/Administration.vue';
-import FormBuilder from './views/FormBuilder.vue';
+// import FormBuilder from './views/FormBuilder.vue';
 import MenuMaint from './views/menu/MenuMaint.vue';
 import MenuTree from './views/menu/DemoMenuTree2';
 import Help from './views/Help.vue';
+import QuoteMaint from './views/quotes/QuoteMaint.vue';
+import QuotesView from './views/quotes/QuotesView.vue';
 
 Vue.use(Router);
 
@@ -22,6 +24,16 @@ export default new Router({
       path: '/home',
       name: 'home',
       component: Home,
+    },
+    {
+      path: '/apps/quotemaint',
+      name: 'quotemaint',
+      component: QuoteMaint,
+    },
+    {
+      path: '/apps/quoteslist',
+      name: 'quoteslist',
+      component: QuotesView,
     },
     {
       path: '/about',
@@ -48,11 +60,11 @@ export default new Router({
       name: 'help',
       component: Help,
     },
-    {
-      path: '/form builder',
-      name: 'formbuilder',
-      component: FormBuilder,
-    },
+    // {
+    //   path: '/form builder',
+    //   name: 'formbuilder',
+    //   component: FormBuilder,
+    // },
     {
       path: '/apps/:appid/:pageid',
       name: 'application',

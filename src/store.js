@@ -9,8 +9,14 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     serverUrl: window.location.protocol + '//' + window.location.hostname + ':' + SERVERPORT,
+    serviceHeaders: { 'Content-Type': 'application/json' },
     menuItems: [],
     applicationTitle: '',
+    appForm: {
+      title: '',
+      data: {},
+      pageactions: {},
+    },
     customFormData: {},
     formBuilder: {
       appid: '',
@@ -18,23 +24,28 @@ export default new Vuex.Store({
       formid: '',
       data: {},
     },
+    // quotes: [],
+    quote: {},
   },
   getters: {
     serverUrl: state => state.serverUrl,
+    serviceHeaders: state => state.serviceHeaders,
     menuItems: state => state.menuItems,
-    applicationTitle: state => state.applicationTitle,
-    customFormData: state => state.customFormData,
+    applicationTitle: state => state.appForm.title,
+    customFormData: state => state.appForm.data,
     formBuilderData: state => state.formBuilder.data,
     formBuilderAppId: state => state.formBuilder.appid,
     formBuilderPageId: state => state.formBuilder.pageid,
     formBuilderFormId: state => state.formBuilder.formid,
+    // fetchQuotes: state => state.quotes,
+    getQuote: state => state.quote,
   },
   mutations: {
     MENUITEMS: (state, payload) => {
       state.menuItems = payload;
     },
     PAGEDATA: (state, payload) => {
-      state.applicationTitle = payload.title;
+      state.appForm = payload;
     },
     FORMDATA: (state, payload) => {
       state.customFormData = (payload !== null ? payload : {});
