@@ -38,7 +38,7 @@ export default new Vuex.Store({
     formBuilderPageId: state => state.formBuilder.pageid,
     formBuilderFormId: state => state.formBuilder.formid,
     // fetchQuotes: state => state.quotes,
-    getQuote: state => state.quote,
+    quote: state => state.quote,
   },
   mutations: {
     MENUITEMS: (state, payload) => {
@@ -72,6 +72,9 @@ export default new Vuex.Store({
     SETFORMBUILDERFORM: (state, payload) => {
       state.formBuilder = payload;
     },
+    QUOTE: (state, payload) => {
+      state.quote = payload;
+    }
   },
   actions: {
     fetchMenus: (context, payload) => {
@@ -213,5 +216,8 @@ export default new Vuex.Store({
           context.dispatch('clearFormBuilder');
         });
     },
+    setQuote: (context, payload) => {
+      context.commit('QUOTE', payload);
+    }
   },
 });

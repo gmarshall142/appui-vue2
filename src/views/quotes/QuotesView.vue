@@ -1,6 +1,15 @@
 <template>
   <div class="support">
-    <h1>Quotes List</h1>
+    <div style="margin: 10px 40px 10px 20px">
+      <v-layout row wrap>
+        <v-flex xs10 class="text-xs-left">
+          <h1>Quotes List</h1>
+        </v-flex>
+        <v-flex xs2 class="text-xs-right">
+          <v-btn @click="addQuote">Add Quote</v-btn>
+        </v-flex>
+      </v-layout>
+    </div>
     <v-spacer></v-spacer>
 
     <alertctl ref="alertCtrl"></alertctl>
@@ -21,6 +30,8 @@
   import MaintDataTable from '../component/MaintDataTable.vue';
   import MenuTree from '../component/MenuTree.vue';
   import AlertControl from '../component/Alert'
+  import router from '../../router';
+
   const _ = require('lodash');
   const defaultRecord = {
     version: 0,
@@ -84,18 +95,6 @@
       console.log('mounted');
     },
     computed: {
-      // items: {
-      //   get() {
-      //     return this.items;
-      //   },
-      //   set(value) {
-      //     console.log('------------- items.set');
-      //     this.items = value;
-      //   }
-      // },
-      // disableMenuAdd() {
-      //   return this.editRecord.id === null || this.editHasMenuItem;
-      // },
       formEnabled() {
         return this.appId === undefined;
       },
@@ -135,28 +134,22 @@
             console.log(err.response.data);
           });
       },
+      addQuote() {
+        this.$store.dispatch('setQuote', {});
+        router.push('/apps/quotemaint');
+      },
       submit() {
         if (this.$refs.form.validate()) {
-          this.submitItem(this.editIndex, this.editRecord);
+          this.submitItem(this.editIndex, this.quote);
         }
       },
-     //  menuAdd() {
-     //    console.log(`------------ menuAdd: ${this.editRecord}`);
-     //    const appItem = this.getAppItem();
-     //    this.$refs.menuTree.addApp({
-     //      appid: this.appId,
-     //      label: this.editRecord.title,
-     //      routerpath: '',
-     //      pageid: this.editRecord.id,
-     //      parentid: appItem.id,
-     //      position: appItem.children.length + 1,
-     //    }, this.$refs.menuTree.MenuNodeTypes.PAGE);
-     // },
       editItem(item) {
-        this.editIndex = this.items.indexOf(item);
+        // this.editIndex = this.items.indexOf(item);
         // TODO: set store quote and navigate to QuoteMaint
         //this.editRecord = item;
         // this.setEditHasMenuItem();
+        this.$store.dispatch('setQuote', item);
+        router.push('/apps/quotemaint');
       },
       getAppItem: function() {
         const appItems = this.$refs.menuTree.getAppItems();
@@ -182,35 +175,6 @@
             console.log(err);
             this.$refs.alertCtrl.showAlert('error', 'Delete failed.');
           });
-      },
-      submitItem: function(idx, record) {
-        if (idx > -1 && record.id !== null) {
-          // update -----------------
-          return axios.put(`${this.$store.getters.serverUrl}/pages/${record.id}`, record, this.requestHeaders)
-            .then((response) => {
-              const itemIdx = _.findIndex(this.items, (it) => { return it.id === response.data.id });
-              this.items[itemIdx] = response.data;
-              this.items = this.updateItems(this);
-              //this.showAlert('success', 'Page updated.')
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        } else {
-          // add --------------------
-          record.appid = this.appId;
-          return axios.post(`${this.$store.getters.serverUrl}/pages`, record, this.requestHeaders)
-            .then((response) => {
-              this.items.push(response.data);
-              this.items = this.updateItems(this);
-              this.editItem(response.data);
-              //this.showAlert('success', 'Page added.')
-            })
-            .catch((err) => {
-              console.log(err);
-              this.$refs.alertCtrl.showAlert('error', `Quotes request failed.`);
-            });
-        }
       },
       updateItems: function(self) {
         // It was necessary to force the datatable to update by creating a new items array

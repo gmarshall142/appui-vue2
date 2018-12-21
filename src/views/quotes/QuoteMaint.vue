@@ -1,35 +1,132 @@
 <template>
   <div class="support">
-    <h1>Quote Maintenance</h1>
+    <div style="margin: 10px 40px 10px 20px">
+      <v-layout row wrap>
+        <v-flex xs10 class="text-xs-left">
+          <h1>Quote Maintenance</h1>
+        </v-flex>
+        <v-flex xs2 class="text-xs-right">
+          <v-btn @click="showList">Show List</v-btn>
+        </v-flex>
+      </v-layout>
+    </div>
     <v-spacer></v-spacer>
 
-    <v-container fluid>
-      <v-form v-model="valid" ref="form" lazy-validation>
-        <v-text-field
-          label="Quote Text"
-          v-model="quote.quote_string"
-          :rules="quoteRules"
-          required
-          multi-line
-        ></v-text-field>
-        <v-text-field
-          label="Author First Name"
-          v-model="quote.author_first_name"
-        ></v-text-field>
-        <v-text-field
-          label="Author Last Name"
-          v-model="quote.author_last_name"
-        ></v-text-field>
-        <v-text-field
-          label="Source"
-          v-model="quote.source"
-        ></v-text-field>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" flat @click.native="close">Cancel</v-btn>
-          <v-btn color="blue darken-1" flat :disabled="!valid" @click.native="save">Save</v-btn>
-        </v-card-actions>
-      </v-form>
+    <alertctl ref="alertCtrl"></alertctl>
+
+    <div style="margin: 20px 20px">
+      <v-container fluid grid-list-md text-xs-center>
+        <v-form v-model="valid" ref="form">
+          <v-layout row wrap>
+            <!-- ID, First, Last -->
+            <v-flex xs2 class="text-xs-left">
+              <v-card-text class="text-xs-left" style="height: 50%; vertical-align: middle;">ID:&nbsp;&nbsp;&nbsp;&nbsp;{{quote.id}}</v-card-text>
+            </v-flex>
+            <v-flex xs5>
+              <v-text-field
+                label="Author First Name"
+                v-model="quote.author_first_name"
+              ></v-text-field>
+            </v-flex>
+            <v-flex xs5>
+              <v-text-field
+                label="Author Last Name"
+                v-model="quote.author_last_name"
+              ></v-text-field>
+            </v-flex>
+          </v-layout>
+          <v-layout row wrap>
+            <v-flex xs3>
+              <!-- Category -->
+              <v-select
+                v-model="quote.categoryid"
+                :items="categories"
+                label="Category"
+                item-text="name"
+                item-value="id"
+                clearable
+              ></v-select>
+            </v-flex>
+            <v-flex xs1 />
+            <v-flex xs3>
+              <!-- Format -->
+              <v-select
+                v-model="quote.formatid"
+                :items="formats"
+                label="Format"
+                item-text="name"
+                item-value="id"
+                clearable
+              ></v-select>
+            </v-flex>
+            <v-flex xs1 />
+            <v-flex xs4>
+              <!-- Updatedat -->
+              <v-card-text class="text-xs-left" style="height: 50%; vertical-align: middle; font-size: small">Updated:&nbsp;&nbsp;&nbsp;&nbsp;{{quote.updatedat}}</v-card-text>
+            </v-flex>
+          </v-layout>
+          <v-layout row wrap>
+            <!-- Quote -->
+            <v-flex xs12 class="text-xs-left">
+              <v-textarea
+                label="Quote Text"
+                v-model="quote.quote_string"
+                :rules="quoteRules"
+                required
+                box
+                rows="3"
+              ></v-textarea>
+            </v-flex>
+          </v-layout>
+          <v-layout row wrap>
+            <v-flex xs5>
+              <!-- Source -->
+              <v-text-field
+                label="Source"
+                v-model="quote.source"
+              ></v-text-field>
+            </v-flex>
+            <v-flex xs2 />
+            <v-flex xs5>
+              <!-- Graphic URL -->
+              <v-text-field
+                label="Graphic URL"
+                v-model="quote.graphic_url"
+              ></v-text-field>
+            </v-flex>
+          </v-layout>
+          <v-layout row wrap>
+            <v-flex xs12>
+              <!-- Comment -->
+              <v-textarea
+                label="Comment"
+                v-model="quote.comment"
+                :rules="comment"
+                required
+                rows="1"
+              ></v-textarea>
+            </v-flex>
+          </v-layout>
+          <v-layout row wrap>
+            <v-flex xs11 class="text-xs-left">
+              <v-btn :disabled="!valid" @click="submit">Submit</v-btn>
+              <v-btn @click="clear">Clear</v-btn>
+            </v-flex>
+          </v-layout>
+        </v-form>
+      </v-container>
+    </div>
+
+
+        <!--<v-text-field-->
+          <!--label="Source"-->
+          <!--v-model="quote.source"-->
+        <!--&gt;</v-text-field>-->
+        <!--<v-card-actions>-->
+          <!--<v-spacer></v-spacer>-->
+          <!--<v-btn color="blue darken-1" flat @click.native="close">Cancel</v-btn>-->
+          <!--<v-btn color="blue darken-1" flat :disabled="!valid" @click.native="save">Save</v-btn>-->
+        <!--</v-card-actions>-->
       <!--<v-layout row>-->
         <!--<v-flex xs8>-->
           <!--<v-container grid-list-md text-xs-center style="padding-top: 0;">-->
@@ -94,9 +191,6 @@
           <!--</div>-->
         <!--</v-flex>-->
       <!--</v-layout>-->
-    </v-container>
-
-    <alertctl ref="alertCtrl"></alertctl>
 
     <v-spacer></v-spacer>
 
@@ -114,77 +208,42 @@
   import MaintDataTable from '../component/MaintDataTable.vue';
   import MenuTree from '../component/MenuTree.vue';
   import AlertControl from '../component/Alert'
+  import router from '../../router';
+  import Helper from '../../modules/helper';
+
   const _ = require('lodash');
+  const helper = new Helper();
+  const emptyRecord = {
+    id: undefined,
+    formatid: 1,
+    categoryid: undefined,
+    quote_string: '',
+    author_first_name: '',
+    author_last_name: '',
+    source: '',
+  };
 
   export default {
     name: 'QuoteMaint',
     // props: ['quote'],
     data: () => ({
-      quote: {
-        id: undefined,
-        quote_string: '',
-        author_first_name: '',
-        author_last_name: '',
-        source: '',
-      },
+      categories: [],
+      formats: [],
       valid: true,
       quoteRules: [
         v => !!v || 'Quote string is required',
       ],
       select: null,
     }),
-    // props: ['item', 'index', 'submenu'],
-    // data() {
-    //   return {
-    //     headers: [
-    //       { text: 'ID', value: 'id' },
-    //       { text: 'Title', value: 'title' },
-    //       { text: 'Name', value: 'name' },
-    //       { text: 'Description', value: 'description' },
-    //     ],
-    //     apps: [],
-    //     appId: undefined,
-    //     items: [],
-    //     // alertShow: false,
-    //     // alertType: 'success',
-    //     // alertMsg: '',
-    //     editRecord: {
-    //       id: null,
-    //       appid: 0,
-    //       title: '',
-    //       name: '',
-    //       description: '',
-    //     },
-    //     editIndex: -1,
-    //     valid: false,
-    //     editHasMenuItem: false,
-    //     promptColumn: 'title',
-    //     requestHeaders: {
-    //       Accept: 'application/json',
-    //       'Content-Type': 'application/json',
-    //     },
-    //     panel: [],
-    //     rules: {
-    //       name: [
-    //         v => !!v || 'Title is required and will be used as a label for the application.',
-    //         v => (v && v.length <= 40) || 'Name must be less than 40 characters'
-    //       ],
-    //       shortname: [
-    //         v => !!v || 'Name is required and will be used to identify the application .',
-    //         v => (v && v.length <= 20) || 'Short Name must be less than 30 characters'
-    //       ],
-    //       description: [
-    //         v => (v && v.length <= 60) || 'Description must be less than 60 characters'
-    //       ]
-    //     },
-    //   };
-    // },
     components: {
       MaintDataTable,
       MenuTree,
       alertctl: AlertControl,
     },
     mounted() {
+      if (this.quote.id === undefined) {
+        this.$store.dispatch('setQuote', _.cloneDeep(emptyRecord));
+      }
       this.initializePage();
       console.log('mounted');
     },
@@ -198,11 +257,8 @@
           this.items = value;
         }
       },
-      // disableMenuAdd() {
-      //   return this.editRecord.id === null || this.editHasMenuItem;
-      // },
       quote() {
-        return this.$store.getters.getQuote;
+        return this.$store.getters.quote;
       },
       formEnabled() {
         return this.appId === undefined;
@@ -211,6 +267,8 @@
     methods: {
       initializePage: function() {
         this.fetchApps();
+        helper.fetch(this, 'categories', '/quotes/categories');
+        helper.fetch(this, 'formats', '/quotes/formats');
       },
       fetchApps: function() {
         axios.get(`${this.$store.getters.serverUrl}/applications`)
@@ -221,63 +279,88 @@
             console.log(err.response.data);
           });
       },
-      fetchRows: function(e) {
-        this.clear();
-        this.items = [];
-        this.appId = e;
-        axios.get(`${this.$store.getters.serverUrl}/pages/app/${e}`)
-          .then((response) => {
-            this.items = response.data;
-          })
-          .catch((err) => {
-            console.log(err.response.data);
-          });
+      // fetchRows: function(e) {
+      //   this.clear();
+      //   this.items = [];
+      //   this.appId = e;
+      //   axios.get(`${this.$store.getters.serverUrl}/pages/app/${e}`)
+      //     .then((response) => {
+      //       this.items = response.data;
+      //     })
+      //     .catch((err) => {
+      //       console.log(err.response.data);
+      //     });
+      // },
+      showList() {
+        router.push('/apps/quoteslist');
       },
       clear() {
-        this.editIndex = -1;
-        this.editHasMenuItem = false;
-        this.editRecord = {id: null};
         this.$refs.form.reset();
+        // this.editIndex = -1;
+        // this.editRecord = _.cloneDeep(emptyRecord);
+        this.$store.dispatch('setQuote', _.cloneDeep(emptyRecord));
       },
       submit() {
         if (this.$refs.form.validate()) {
-          this.submitItem(this.editIndex, this.editRecord);
+          if (this.quote.id === undefined) {
+            // add --------------------
+            axios.post(`${this.$store.getters.serverUrl}/quotes`, this.quote, this.requestHeaders)
+              .then((response) => {
+                this.clear();
+                this.$refs.alertCtrl.showAlert('success', 'Quote added.')
+              })
+              .catch((err) => {
+                console.log(err);
+                this.$refs.alertCtrl.showAlert('error', `Quotes add failed.`);
+              });
+          } else {
+            // update -----------------
+            axios.put(`${this.$store.getters.serverUrl}/quotes/${this.quote.id}`, this.quote, this.requestHeaders)
+              .then((response) => {
+                this.clear();
+                this.$refs.alertCtrl.showAlert('success', 'Quote updated.')
+              })
+              .catch((err) => {
+                console.log(err);
+                this.$refs.alertCtrl.showAlert('error', `Quotes update failed.`);
+              });
+          }
         }
       },
-      menuAdd() {
-        console.log(`------------ menuAdd: ${this.editRecord}`);
-        const appItem = this.getAppItem();
-        this.$refs.menuTree.addApp({
-          appid: this.appId,
-          label: this.editRecord.title,
-          routerpath: '',
-          pageid: this.editRecord.id,
-          parentid: appItem.id,
-          position: appItem.children.length + 1,
-        }, this.$refs.menuTree.MenuNodeTypes.PAGE);
-     },
-      editItem(item) {
-        this.editIndex = this.items.indexOf(item);
-        this.editRecord = item;
-        this.setEditHasMenuItem();
-      },
-      getAppItem: function() {
-        const appItems = this.$refs.menuTree.getAppItems();
-        return _.find(appItems, (it) => {
-          return it.appid === this.appId
-        });
-      },
-      appMenuHasPage: function(children, id) {
-        return _.find(children, (it) => {
-          console.log(`id: ${id} : pageid: ${it.pageid}`);
-          if (it.pageid === id) {
-            console.log(`------------------ fnd: ${it.pageid}`);
-            return true;
-          } else {
-            return this.appMenuHasPage(it.children, id);
-          }
-        })
-      },
+     //  menuAdd() {
+     //    console.log(`------------ menuAdd: ${this.editRecord}`);
+     //    const appItem = this.getAppItem();
+     //    this.$refs.menuTree.addApp({
+     //      appid: this.appId,
+     //      label: this.editRecord.title,
+     //      routerpath: '',
+     //      pageid: this.editRecord.id,
+     //      parentid: appItem.id,
+     //      position: appItem.children.length + 1,
+     //    }, this.$refs.menuTree.MenuNodeTypes.PAGE);
+     // },
+     //  editItem(item) {
+     //    this.editIndex = this.items.indexOf(item);
+     //    this.editRecord = item;
+     //    this.setEditHasMenuItem();
+     //  },
+     //  getAppItem: function() {
+     //    const appItems = this.$refs.menuTree.getAppItems();
+     //    return _.find(appItems, (it) => {
+     //      return it.appid === this.appId
+     //    });
+     //  },
+      // appMenuHasPage: function(children, id) {
+      //   return _.find(children, (it) => {
+      //     console.log(`id: ${id} : pageid: ${it.pageid}`);
+      //     if (it.pageid === id) {
+      //       console.log(`------------------ fnd: ${it.pageid}`);
+      //       return true;
+      //     } else {
+      //       return this.appMenuHasPage(it.children, id);
+      //     }
+      //   })
+      // },
       deleteItem: function(idx) {
         const items = this.items;
         console.log(`delete in AppMaint: ${idx}  id: ${items[idx].id}`);
@@ -298,42 +381,14 @@
             console.log(err);
           });
       },
-      submitItem: function(idx, record) {
-        if (idx > -1 && record.id !== null) {
-          // update -----------------
-          return axios.put(`${this.$store.getters.serverUrl}/pages/${record.id}`, record, this.requestHeaders)
-            .then((response) => {
-              const itemIdx = _.findIndex(this.items, (it) => { return it.id === response.data.id });
-              this.items[itemIdx] = response.data;
-              this.items = this.updateItems(this);
-              //this.showAlert('success', 'Page updated.')
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        } else {
-          // add --------------------
-          record.appid = this.appId;
-          return axios.post(`${this.$store.getters.serverUrl}/pages`, record, this.requestHeaders)
-            .then((response) => {
-              this.items.push(response.data);
-              this.items = this.updateItems(this);
-              this.editItem(response.data);
-              //this.showAlert('success', 'Page added.')
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        }
-      },
-      updateItems: function(self) {
-        // It was necessary to force the datatable to update by creating a new items array
-        const newList = [];
-        _.forEach(self.items, (it) => {
-          newList.push(it);
-        });
-        return newList;
-      },
+      // updateItems: function(self) {
+      //   // It was necessary to force the datatable to update by creating a new items array
+      //   const newList = [];
+      //   _.forEach(self.items, (it) => {
+      //     newList.push(it);
+      //   });
+      //   return newList;
+      // },
       // showAlert: function(type, msg, duration = 3000) {
       //   this.alertShow = true;
       //   this.alertType = type;

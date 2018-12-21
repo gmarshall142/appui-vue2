@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const _ = require('lodash');
 
 export default class Helper {
@@ -53,6 +55,20 @@ export default class Helper {
       }
       this.findComponentKey(key, component.components);
     });
-  }
+  };
+
+  fetch = (context, dataElem, url) => {
+    const requestContext = context;
+    axios.get(`${context.$store.getters.serverUrl}${url}`)
+      .then((response) => {
+        requestContext[dataElem] = response.data;
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+      });
+  };
+
+  asyncFetch = async (url, context) => axios.get(`${context.$store.getters.serverUrl}${url}`);
+
 }
 
