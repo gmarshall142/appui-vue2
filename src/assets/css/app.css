@@ -15,3 +15,7 @@ div.pageTitle {
   margin: 20px 20px;
 }
 
+div.field {
+  padding-left: 10px;
+  padding-right: 10px;
+}

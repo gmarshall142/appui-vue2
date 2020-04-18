@@ -3,7 +3,7 @@
     <div style="margin: 10px 40px 10px 20px">
       <v-layout row wrap>
         <v-flex xs10 class="text-xs-left">
-          <h1>Quotes List</h1>
+          <h1>Notes List</h1>
         </v-flex>
         <v-flex xs2 class="text-xs-right">
           <v-btn @click="addQuote">Add Quote</v-btn>
@@ -46,7 +46,7 @@
   };
 
   export default {
-    name: 'QuotesView',
+    name: 'NotesView',
     props: ['item', 'index', 'submenu'],
     data() {
       return {

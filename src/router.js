@@ -10,6 +10,8 @@ import MenuTree from './views/menu/DemoMenuTree2';
 import Help from './views/Help.vue';
 import QuoteMaint from './views/quotes/QuoteMaint.vue';
 import QuotesView from './views/quotes/QuotesView.vue';
+import NoteMaint from './views/notes/NoteMaint.vue';
+import NotesView from './views/notes/NotesView.vue';
 
 Vue.use(Router);
 
@@ -34,6 +36,16 @@ export default new Router({
       path: '/apps/quoteslist',
       name: 'quoteslist',
       component: QuotesView,
+    },
+    {
+      path: '/apps/notemaint',
+      name: 'notemaint',
+      component: NoteMaint,
+    },
+    {
+      path: '/apps/noteslist',
+      name: 'noteslist',
+      component: NotesView,
     },
     {
       path: '/about',

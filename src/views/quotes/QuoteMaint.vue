@@ -101,7 +101,6 @@
               <v-textarea
                 label="Comment"
                 v-model="quote.comment"
-                :rules="comment"
                 required
                 rows="1"
               ></v-textarea>
@@ -221,6 +220,7 @@
     author_first_name: '',
     author_last_name: '',
     source: '',
+    comment: ''
   };
 
   export default {
@@ -266,18 +266,8 @@
     },
     methods: {
       initializePage: function() {
-        this.fetchApps();
         helper.fetch(this, 'categories', '/quotes/categories');
         helper.fetch(this, 'formats', '/quotes/formats');
-      },
-      fetchApps: function() {
-        axios.get(`${this.$store.getters.serverUrl}/applications`)
-          .then((response) => {
-            this.apps = response.data;
-          })
-          .catch((err) => {
-            console.log(err.response.data);
-          });
       },
       // fetchRows: function(e) {
       //   this.clear();
