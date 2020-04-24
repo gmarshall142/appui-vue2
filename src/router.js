@@ -12,6 +12,8 @@ import QuoteMaint from './views/quotes/QuoteMaint.vue';
 import QuotesView from './views/quotes/QuotesView.vue';
 import NoteMaint from './views/notes/NoteMaint.vue';
 import NotesView from './views/notes/NotesView.vue';
+import Profile from './views/Profile.vue';
+import { authGuard } from "./auth";
 
 Vue.use(Router);
 
@@ -82,5 +84,11 @@ export default new Router({
       name: 'application',
       component: Application,
     },
+    {
+      path: "/profile",
+      name: "profile",
+      component: Profile,
+      beforeEnter: authGuard
+    }
   ],
 });

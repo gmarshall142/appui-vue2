@@ -1,15 +1,22 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import axios from 'axios';
+// import axios from 'axios';
+import AxiosHelper from './modules/axiosHelper';
+
 const { SERVERPORT = 3000 } = process.env;
 const _ = require('lodash');
+const axiosHelper = new AxiosHelper();
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    serverUrl: window.location.protocol + '//' + window.location.hostname + ':' + SERVERPORT,
-    serviceHeaders: { 'Content-Type': 'application/json' },
+    serverUrl: `${window.location.protocol}//${window.location.hostname}:${SERVERPORT}`,
+    devMode: false,
+    serviceHeaders: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
     menuItems: [],
     applicationTitle: '',
     appForm: {
@@ -29,6 +36,7 @@ export default new Vuex.Store({
   },
   getters: {
     serverUrl: state => state.serverUrl,
+    devMode: state => state.devMode,
     serviceHeaders: state => state.serviceHeaders,
     menuItems: state => state.menuItems,
     applicationTitle: state => state.appForm.title,
@@ -41,6 +49,9 @@ export default new Vuex.Store({
     quote: state => state.quote,
   },
   mutations: {
+    devMode: (state, payload) => {
+      state.devMode = payload;
+    },
     MENUITEMS: (state, payload) => {
       state.menuItems = payload;
     },
@@ -49,6 +60,12 @@ export default new Vuex.Store({
     },
     FORMDATA: (state, payload) => {
       state.customFormData = (payload !== null ? payload : {});
+    },
+    REST_URL: (state, payload) => {
+      console.log(`payload.port: ${payload.port}`);
+      const port = !payload.port || payload.port === '' ? '' : `:${payload.port}`;
+      state.serverUrl = `${window.location.protocol}//${payload.host}${port}`;
+      console.log(`serverUrl: ${state.serverUrl}  protocol: ${window.location.protocol}`);
     },
     updateFormBuilderAppId: (state, payload) => {
       state.formBuilder.appid = payload;
@@ -77,35 +94,35 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    devMode: (context, payload) => {
+      context.commit('devMode', payload === 'DEV');
+    },
     fetchMenus: (context, payload) => {
-      axios({
-        method: 'get',
-        url: `${context.getters.serverUrl}/menus`,
-      })
+      // axios({
+      //   method: 'get',
+      //   url: `${context.getters.serverUrl}/menus`,
+      // })
+      axiosHelper.get('/menus')
         .then((response) => {
           context.commit('MENUITEMS', response.data);
-        })
-        .catch((err) => {
-          console.log(err.response.data);
         });
     },
     fetchPage: (context, payload) => {
-      axios({
-        method: 'get',
-        url: `${context.getters.serverUrl}/pages/${payload.appid}/${payload.pageid}`,
-      })
+      // axios({
+      //   method: 'get',
+      //   url: `${context.getters.serverUrl}/pages/${payload.appid}/${payload.pageid}`,
+      // })
+      axiosHelper.get(`/pages/${payload.appid}/${payload.pageid}`)
         .then((response) => {
           context.commit('PAGEDATA', response.data);
-        })
-        .catch((err) => {
-          console.log(err.response.data);
         });
     },
     fetchForm: (context, payload) => {
-      axios({
-        method: 'get',
-        url: `${context.getters.serverUrl}/pages/forms/${payload.appid}/${payload.pageid}`,
-      })
+      // axios({
+      //   method: 'get',
+      //   url: `${context.getters.serverUrl}/pages/forms/${payload.appid}/${payload.pageid}`,
+      // })
+      axiosHelper.get(`/pages/forms/${payload.appid}/${payload.pageid}`)
         .then((response) => {
           context.commit('PAGEDATA', response.data);
           context.commit('FORMDATA', response.data.data);
@@ -126,14 +143,15 @@ export default new Vuex.Store({
       );
     },
     saveFormBuilderToFile: (context, payload) => {
-      axios({
-        method: 'post',
-        data: payload.data,
-        url: `${context.getters.serverUrl}/pages/form/${payload.appid}/${payload.pageid}`,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      // axios({
+      //   method: 'post',
+      //   data: payload.data,
+      //   url: `${context.getters.serverUrl}/pages/form/${payload.appid}/${payload.pageid}`,
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      // })
+      axiosHelper.post(`/pages/form/${payload.appid}/${payload.pageid}`, payload.data)
         .then((response) => {
           context.commit('FORMBUILDERIDS', response.data);
         })
@@ -142,19 +160,19 @@ export default new Vuex.Store({
         });
     },
     loadFormBuilderToFile: (context, payload) => {
-      axios({
-        method: 'get',
-        data: payload.data,
-        url: `${context.getters.serverUrl}/pages/form/${payload.appid}/${payload.pageid}`,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      // axios({
+      //   method: 'get',
+      //   data: payload.data,
+      //   url: `${context.getters.serverUrl}/pages/form/${payload.appid}/${payload.pageid}`,
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      // })
+      axiosHelper.get(`/pages/form/${payload.appid}/${payload.pageid}`, payload.data)
         .then((response) => {
           context.commit('SETFORMBUILDERFORM', response.data);
         })
         .catch((err) => {
-          console.log(err.response.data);
           context.dispatch('clearFormBuilder');
         });
     },
@@ -162,30 +180,29 @@ export default new Vuex.Store({
       const formId = payload.formid;
       if (formId  === undefined || formId === '') {
         // add
-        axios({
-          method: 'post',
-          data: payload.data,
-          url: `${context.getters.serverUrl}/pages/forms/${payload.appid}/${payload.pageid}`,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
+        // axios({
+        //   method: 'post',
+        //   data: payload.data,
+        //   url: `${context.getters.serverUrl}/pages/forms/${payload.appid}/${payload.pageid}`,
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        // })
+        axiosHelper.post(`/pages/forms/${payload.appid}/${payload.pageid}`, payload.data)
           .then((response) => {
             context.commit('FORMBUILDERFORMID', response.data.id);
-          })
-          .catch((err) => {
-            console.log(err.response.data);
           });
       } else {
         // update
-        axios({
-          method: 'put',
-          data: payload.data,
-          url: `${context.getters.serverUrl}/pages/forms/${payload.appid}/${payload.pageid}/${formId}`,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
+        // axios({
+        //   method: 'put',
+        //   data: payload.data,
+        //   url: `${context.getters.serverUrl}/pages/forms/${payload.appid}/${payload.pageid}/${formId}`,
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        // })
+        axiosHelper.put(`/pages/forms/${payload.appid}/${payload.pageid}/${formId}`, payload.data)
           .then((response) => {
             context.commit('FORMBUILDERFORMID', response.data.id);
           })
@@ -195,14 +212,15 @@ export default new Vuex.Store({
       }
     },
     loadFormBuilder: (context, payload) => {
-      axios({
-        method: 'get',
-        data: payload.data,
-        url: `${context.getters.serverUrl}/pages/forms/${payload.appid}/${payload.pageid}`,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      // axios({
+      //   method: 'get',
+      //   data: payload.data,
+      //   url: `${context.getters.serverUrl}/pages/forms/${payload.appid}/${payload.pageid}`,
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      // })
+      axiosHelper.get(`/pages/forms/${payload.appid}/${payload.pageid}`, payload.data)
         .then((response) => {
           if (response.data.formid === null) {
             response.data.formid = '';
@@ -218,6 +236,19 @@ export default new Vuex.Store({
     },
     setQuote: (context, payload) => {
       context.commit('QUOTE', payload);
+    },
+    setRestUrl: (context, payload) => { context.commit('REST_URL', payload); },
+    devLogin: (context, payload) => {
+      return new Promise((resolve, reject) => {
+        axiosHelper.post('/users/npke', payload)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((err) => {
+            console.error(`Failure in devLogin ${err}`);
+            reject(err);
+          });
+      });
     }
   },
 });
