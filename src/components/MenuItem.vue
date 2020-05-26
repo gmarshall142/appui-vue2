@@ -1,17 +1,17 @@
 <template>
-  <v-list-tile
+  <v-list-item
     slot="activator"
     v-if="item.children.length === 0"
     :to="item.routingPath"
   >
-    <v-list-tile-action>
+    <v-list-item-action>
       <v-icon v-html="item.icon"></v-icon>
-    </v-list-tile-action>
-    <v-list-tile-content>
-      <v-list-tile-sub-title v-if="submenu">{{ item.label }}</v-list-tile-sub-title>
-      <v-list-tile-title v-else>{{ item.label }}</v-list-tile-title>
-    </v-list-tile-content>
-  </v-list-tile>
+    </v-list-item-action>
+    <v-list-item-content>
+      <v-list-item-subtitle v-if="submenu">{{ item.label }}</v-list-item-subtitle>
+      <v-list-item-title v-else>{{ item.label }}</v-list-item-title>
+    </v-list-item-content>
+  </v-list-item>
   <v-list-group
     v-else
     :key="item.label"
@@ -20,11 +20,11 @@
     :value="false"
     no-action
   >
-    <v-list-tile slot="activator">
-      <v-list-tile-content>
-        <v-list-tile-title>{{ item.label }}</v-list-tile-title>
-      </v-list-tile-content>
-    </v-list-tile>
+    <v-list-item slot="activator">
+      <v-list-item-content>
+        <v-list-item-title>{{ item.label }}</v-list-item-title>
+      </v-list-item-content>
+    </v-list-item>
     <template v-for="(childItem, childIndex) in item.children">
       <menu-item :item="childItem" :index="childIndex" :submenu=true />
     </template>

@@ -1,4 +1,5 @@
 {
   "domain": "dev-rn77drwl.auth0.com",
-  "clientId": "yfmIXPvyk2LOZONMTU94Fq0xns1Ip0hk"
+  "clientId": "yfmIXPvyk2LOZONMTU94Fq0xns1Ip0hk",
+  "audience": "https://gmarshall.us"
 }

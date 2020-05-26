@@ -67,6 +67,9 @@ export const useAuth0 = ({
       getTokenWithPopup(o) {
         return this.auth0Client.getTokenWithPopup(o);
       },
+      getUser() {
+        return this.auth0Client.getUser();
+      },
       logout(o) {
         return this.auth0Client.logout(o);
       }
@@ -76,7 +79,8 @@ export const useAuth0 = ({
         domain: options.domain,
         client_id: options.clientId,
         audience: options.audience,
-        redirect_uri: redirectUri
+        redirect_uri: redirectUri,
+        cacheLocation: 'localstorage'
       });
 
       try {
