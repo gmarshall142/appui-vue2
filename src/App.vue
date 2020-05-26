@@ -48,7 +48,7 @@
         bottom :close-on-content-click="true"
       >
         <template v-slot:activator="{ on }">
-          <v-btn text small v-on="on">
+          <v-btn text small v-on="on" style="height: unset">
             <img
               :src="$auth.user.picture"
               alt="User's profile picture"
