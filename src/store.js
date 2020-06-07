@@ -45,7 +45,7 @@ export default new Vuex.Store({
     formBuilderAppId: state => state.formBuilder.appid,
     formBuilderPageId: state => state.formBuilder.pageid,
     formBuilderFormId: state => state.formBuilder.formid,
-    // fetchQuotes: state => state.quotes,
+    // fetchNotes: state => state.quotes,
     quote: state => state.quote,
   },
   mutations: {

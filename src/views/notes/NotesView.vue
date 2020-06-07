@@ -27,24 +27,25 @@
 </template>
 
 <script>
-  import axios from 'axios';
   import DataTable from '../component/DataTable.vue';
   import MenuTree from '../component/MenuTree.vue';
   import AlertControl from '../component/Alert'
   import router from '../../router';
+  import AxiosHelper from "../../modules/axiosHelper";
 
   const _ = require('lodash');
-  const defaultRecord = {
-    version: 0,
-      author_first_name: '',
-      author_last_name: '',
-      category: 0,
-      comment: '',
-      graphic_url: null,
-      quote_format: 0,
-      quote_string: null,
-      source: '',
-  };
+  const axiosHelper = new AxiosHelper();
+  // const defaultRecord = {
+  //   version: 0,
+  //     author_first_name: '',
+  //     author_last_name: '',
+  //     category: 0,
+  //     comment: '',
+  //     graphic_url: null,
+  //     quote_format: 0,
+  //     quote_string: null,
+  //     source: '',
+  // };
 
   export default {
     name: 'NotesView',
@@ -53,15 +54,15 @@
       return {
         headers: [
           { text: 'ID', value: 'id'},
-          { text: 'Author First Name', value: 'author_first_name' },
-          { text: 'Author Last Name', value: 'author_last_name' },
-          { text: 'Quote', value: 'quote_string' },
-          { text: 'Source', value: 'source' },
+          { text: 'Topic', value: 'topic'},
+          { text: 'Comment', value: 'comment' },
+          { text: 'Note', value: 'notetext' },
+          { text: 'Tags', value: 'tags' }
         ],
         apps: [],
         appId: undefined,
         items: [],
-        editRecord: defaultRecord,
+        // editRecord: defaultRecord,
         editIndex: -1,
         valid: false,
         editHasMenuItem: false,
@@ -102,10 +103,10 @@
     },
     methods: {
       initializePage: function() {
-        this.fetchQuotes();
+        this.fetchNotes();
       },
-      fetchQuotes: function() {
-        axios.get('http://localhost:3000/quotes', this.$store.getters.serviceHeaders)
+      fetchNotes: function() {
+        axiosHelper.get('/notes')
           .then((response) => {
             this.items = response.data;
           })
@@ -115,7 +116,7 @@
           });
       },
       fetchApps: function() {
-        axios.get(`${this.$store.getters.serverUrl}/applications`)
+        axiosHelper.get('/applications')
           .then((response) => {
             this.apps = response.data;
           })
@@ -127,7 +128,7 @@
         this.clear();
         this.items = [];
         this.appId = e;
-        axios.get(`${this.$store.getters.serverUrl}/pages/app/${e}`)
+        axiosHelper.get(`/pages/app/${e}`)
           .then((response) => {
             this.items = response.data;
           })
@@ -163,8 +164,8 @@
       },
       deleteItem: function(idx) {
         const items = this.items;
-        console.log(`delete in QuoteView: ${idx}  id: ${items[idx].id}`);
-        return axios.delete(`${this.$store.getters.serverUrl}/quotes/${items[idx].id}`, this.requestHeaders)
+        console.log(`delete in NotesView: ${idx}  id: ${items[idx].id}`);
+        return axiosHelper.delete(`/quotes/${items[idx].id}`)
           .then((response) => {
             const self = this;
             const id = Number(response.data.id);
