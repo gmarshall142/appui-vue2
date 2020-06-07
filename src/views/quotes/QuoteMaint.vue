@@ -73,7 +73,6 @@
                 v-model="quote.quote_string"
                 :rules="quoteRules"
                 required
-                box
                 rows="3"
               ></v-textarea>
             </v-flex>
@@ -108,97 +107,14 @@
           </v-layout>
           <v-layout row wrap>
             <v-flex xs11 class="text-xs-left">
-              <v-btn :disabled="!valid" @click="submit">Submit</v-btn>
-              <v-btn @click="clear">Clear</v-btn>
+              <v-btn class="form-button" :disabled="!valid" @click="submit">Submit</v-btn>
+              <v-btn class="form-button" @click="clear">Clear</v-btn>
             </v-flex>
           </v-layout>
         </v-form>
       </v-container>
     </div>
 
-
-        <!--<v-text-field-->
-          <!--label="Source"-->
-          <!--v-model="quote.source"-->
-        <!--&gt;</v-text-field>-->
-        <!--<v-card-actions>-->
-          <!--<v-spacer></v-spacer>-->
-          <!--<v-btn color="blue darken-1" flat @click.native="close">Cancel</v-btn>-->
-          <!--<v-btn color="blue darken-1" flat :disabled="!valid" @click.native="save">Save</v-btn>-->
-        <!--</v-card-actions>-->
-      <!--<v-layout row>-->
-        <!--<v-flex xs8>-->
-          <!--<v-container grid-list-md text-xs-center style="padding-top: 0;">-->
-            <!--<v-select-->
-              <!--ref="applicationId"-->
-              <!--:items="apps"-->
-              <!--item-text="name"-->
-              <!--item-value="id"-->
-              <!--box-->
-              <!--clearable-->
-              <!--label="Applications"-->
-              <!--@change="fetchRows"-->
-            <!--&gt;</v-select>-->
-            <!--<v-form ref="form" v-model="valid">-->
-              <!--<v-layout row wrap>-->
-                <!--<v-flex xs2 class="text-xs-left">-->
-                  <!--<v-card-text class="text-xs-left" style="height: 50%; vertical-align: middle;">ID:&nbsp;&nbsp;&nbsp;&nbsp;{{editRecord.id}}</v-card-text>-->
-                <!--</v-flex>-->
-                <!--<v-flex xs5>-->
-                  <!--<v-text-field v-model="editRecord.title" :rules="rules.name" label="Title" required :disabled="formEnabled"></v-text-field>-->
-                <!--</v-flex>-->
-                <!--<v-flex xs5>-->
-                  <!--<v-text-field v-model="editRecord.name" :rules="rules.shortname" label="Name" required :disabled="formEnabled"></v-text-field>-->
-                <!--</v-flex>-->
-              <!--</v-layout>-->
-              <!--<v-layout row wrap>-->
-                <!--<v-flex xs12>-->
-                  <!--<v-textarea v-model="editRecord.description" auto-grow label="Description" rows="1"  :disabled="formEnabled"></v-textarea>-->
-                <!--</v-flex>-->
-              <!--</v-layout>-->
-
-              <!--<v-layout row wrap>-->
-                <!--<v-flex xs11 class="text-xs-left">-->
-                  <!--<v-btn :disabled="!valid" @click="submit">Submit</v-btn>-->
-                  <!--<v-btn @click="clear">Clear</v-btn>-->
-                <!--</v-flex>-->
-                <!--<v-flex xs1>-->
-                  <!--<v-tooltip bottom>-->
-                    <!--<v-btn @click="menuAdd" icon slot="activator" :disabled="disableMenuAdd">-->
-                      <!--<v-icon>chevron_right</v-icon>-->
-                    <!--</v-btn>-->
-                    <!--<span>Add application to menu.</span>-->
-                  <!--</v-tooltip>-->
-                <!--</v-flex>-->
-              <!--</v-layout>-->
-            <!--</v-form>-->
-          <!--</v-container>-->
-        <!--</v-flex>-->
-        <!--<v-flex xs4>-->
-          <!--<div>-->
-            <!--<v-expansion-panel ref="menTreeExpansion" v-model="panel">-->
-              <!--<v-expansion-panel-content>-->
-                <!--<div slot="header">Menu</div>-->
-                <!--<menu-tree-->
-                  <!--ref="menuTree"-->
-                  <!--disableSystem="true"-->
-                  <!--@MenuUpdate="setEditHasMenuItem"-->
-                  <!--@MenuSave="showAlert('success', 'Menu saved.')"-->
-                <!--&gt;</menu-tree>-->
-              <!--</v-expansion-panel-content>-->
-            <!--</v-expansion-panel>-->
-          <!--</div>-->
-        <!--</v-flex>-->
-      <!--</v-layout>-->
-
-    <v-spacer></v-spacer>
-
-    <!--<maint-data-table-->
-      <!--ref="dataTable"-->
-      <!--formTitle="Application Pages"-->
-      <!--v-bind="{headers, items, deleteItem, submitItem, promptColumn}"-->
-      <!--v-on:edit-item="editItem"-->
-    <!--&gt;</maint-data-table>-->
   </div>
 </template>
 
@@ -245,7 +161,6 @@
         this.$store.dispatch('setQuote', _.cloneDeep(emptyRecord));
       }
       this.initializePage();
-      console.log('mounted');
     },
     computed: {
       items: {

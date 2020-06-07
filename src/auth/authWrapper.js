@@ -67,8 +67,11 @@ export const useAuth0 = ({
       getTokenWithPopup(o) {
         return this.auth0Client.getTokenWithPopup(o);
       },
+      // getUser() {
+      //   return this.auth0Client.getUser();
+      // },
       getUser() {
-        return this.auth0Client.getUser();
+        return this.user;
       },
       logout(o) {
         return this.auth0Client.logout(o);

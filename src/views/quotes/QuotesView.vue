@@ -16,18 +16,20 @@
 
     <v-spacer></v-spacer>
 
-    <maint-data-table
+    <data-table
       ref="dataTable"
-      formTitle="Application Pages"
+      formTitle="Quotes"
       v-bind="{headers, items, deleteItem, submitItem, promptColumn}"
+      v-bind:actions="{ edit: true, delete: true}"
       v-on:edit-item="editItem"
-    ></maint-data-table>
+    ></data-table>
   </div>
 </template>
 
 <script>
-  import axios from 'axios';
-  import MaintDataTable from '../component/MaintDataTable.vue';
+  // import axios from 'axios';
+  import AxiosHelper from "../../modules/axiosHelper";
+  import DataTable from '../component/DataTable.vue';
   import MenuTree from '../component/MenuTree.vue';
   import AlertControl from '../component/Alert'
   import router from '../../router';
@@ -45,6 +47,8 @@
       source: '',
   };
 
+  const axiosHelper = new AxiosHelper();
+
   export default {
     name: 'QuotesView',
     props: ['item', 'index', 'submenu'],
@@ -56,6 +60,7 @@
           { text: 'Author Last Name', value: 'author_last_name' },
           { text: 'Quote', value: 'quote_string' },
           { text: 'Source', value: 'source' },
+          { text: 'Category', value: 'categoryname'}
         ],
         apps: [],
         appId: undefined,
@@ -86,7 +91,7 @@
       };
     },
     components: {
-      MaintDataTable,
+      DataTable,
       MenuTree,
       alertctl: AlertControl,
     },
@@ -104,7 +109,7 @@
         this.fetchQuotes();
       },
       fetchQuotes: function() {
-        axios.get('http://localhost:3000/quotes', this.$store.getters.serviceHeaders)
+        axiosHelper.get('/quotes')
           .then((response) => {
             this.items = response.data;
           })
@@ -114,7 +119,7 @@
           });
       },
       fetchApps: function() {
-        axios.get(`${this.$store.getters.serverUrl}/applications`)
+        axiosHelper.get('/applications')
           .then((response) => {
             this.apps = response.data;
           })
@@ -126,7 +131,7 @@
         this.clear();
         this.items = [];
         this.appId = e;
-        axios.get(`${this.$store.getters.serverUrl}/pages/app/${e}`)
+        axiosHelper.get(`/pages/app/${e}`)
           .then((response) => {
             this.items = response.data;
           })
@@ -160,10 +165,8 @@
           return it.appid === this.appId
         });
       },
-      deleteItem: function(idx) {
-        const items = this.items;
-        console.log(`delete in QuoteView: ${idx}  id: ${items[idx].id}`);
-        return axios.delete(`${this.$store.getters.serverUrl}/quotes/${items[idx].id}`, this.requestHeaders)
+      deleteItem: function(item) {
+        return axiosHelper.delete(`/quotes/${item.id}`)
           .then((response) => {
             const self = this;
             const id = Number(response.data.id);

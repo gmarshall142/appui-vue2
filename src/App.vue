@@ -137,6 +137,18 @@ export default {
     items() {
       return this.$store.getters.menuItems;
     },
+    user() {
+      console.log('computed user');
+      if(!this.$auth.loading) {
+        return this.$auth.getUser();
+      }
+      return undefined;
+    }
+  },
+  watch: {
+    user(newVal, oldVal) {
+      this.fetchMenu();
+    },
   },
   mounted() {
     console.log('*************** App.mounted');
@@ -151,7 +163,7 @@ export default {
       this.$store.dispatch('setRestUrl', { host: process.env.VUE_APP_REST_HOST, port: process.env.VUE_APP_REST_PORT });
     }
     axiosHelper.init(this);
-    this.$store.dispatch('fetchMenus');
+    this.fetchMenu();
 
     // PROD: send login request with header provided by proxy
     // DEV: use environment variables to set header and send login request
@@ -166,12 +178,14 @@ export default {
     login() {
       if(!this.$auth.loading) {
         this.$auth.loginWithRedirect();
+        this.fetchMenu();
       }
     },
     logout() {
       this.$auth.logout({
         returnTo: window.location.origin
-      })
+      });
+      this.fetchMenu()
     },
     fetchMenu: function() {
       this.$store.dispatch('fetchMenus');

@@ -16,18 +16,19 @@
 
     <v-spacer></v-spacer>
 
-    <maint-data-table
+    <data-table
       ref="dataTable"
-      formTitle="Application Pages"
+      formTitle="Notes"
       v-bind="{headers, items, deleteItem, submitItem, promptColumn}"
+      v-bind:actions="{ edit: true, delete: true}"
       v-on:edit-item="editItem"
-    ></maint-data-table>
+    ></data-table>
   </div>
 </template>
 
 <script>
   import axios from 'axios';
-  import MaintDataTable from '../component/MaintDataTable.vue';
+  import DataTable from '../component/DataTable.vue';
   import MenuTree from '../component/MenuTree.vue';
   import AlertControl from '../component/Alert'
   import router from '../../router';
@@ -86,7 +87,7 @@
       };
     },
     components: {
-      MaintDataTable,
+      DataTable,
       MenuTree,
       alertctl: AlertControl,
     },

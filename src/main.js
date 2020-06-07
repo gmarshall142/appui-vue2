@@ -2,6 +2,7 @@ import '@babel/polyfill'
 import Vue from 'vue';
 // import './plugins/vuetify'
 import Vuetify from 'vuetify';
+import vuetify from './plugins/vuetify';
 import 'vuetify/dist/vuetify.min.css';
 import App from './App.vue';
 import router from './router';
@@ -29,10 +30,9 @@ import { domain, clientId, audience } from '../auth_config.json';
 // Import the plugin
 import { Auth0Plugin } from "./auth";
 
+import '@mdi/font/css/materialdesignicons.css'
+
 Vue.use(Vuetify);
-const vuetify = new Vuetify({
-  theme: { disable: true }
-});
 
 Vue.config.productionTip = false;
 Vue.use(Auth0Plugin, {
@@ -50,7 +50,7 @@ library.add(faLink, faUser, faPowerOff);
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 new Vue({
-  vuetify,
+  vuetify: vuetify,
   router,
   store,
   BootstrapVue,

@@ -8,14 +8,31 @@
 }
 
 h1.pageTitle {
-  margin: 10px 0 0 20px;
+  margin: 10px 0 20px 0;
+  font-weight: bold;
+  display: inline-block;
 }
 
 div.pageTitle {
   margin: 20px 20px;
 }
 
-div.field {
-  padding-left: 10px;
-  padding-right: 10px;
+div.pageDiv {
+  margin: 20px 40px;
+}
+
+div.header-line {
+  white-space: nowrap;
+}
+
+div.pageNumber {
+  display: inline-block;
+}
+
+.formioForm /deep/ ul {
+  padding-left: 0;
+}
+
+.form-button {
+  margin-right: 20px;
 }

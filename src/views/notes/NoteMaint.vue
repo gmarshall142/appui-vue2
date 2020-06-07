@@ -60,10 +60,9 @@
             <v-flex xs12 class="text-xs-left">
               <v-textarea
                 label="Note"
-                v-model="noteRecord.note"
+                v-model="noteRecord.notetext"
                 :rules="rules.note"
                 required
-                box
                 rows="3"
               ></v-textarea>
             </v-flex>
@@ -119,36 +118,30 @@
           </v-layout>
           <v-layout row wrap>
             <v-flex xs11 class="text-xs-left">
-              <v-btn :disabled="!valid" @click="submit">Submit</v-btn>
-              <v-btn @click="clear">Clear</v-btn>
+              <v-btn class="form-button" :disabled="!valid" @click="submit">Submit</v-btn>
+              <v-btn class="form-button" @click="clear">Clear</v-btn>
             </v-flex>
           </v-layout>
         </v-form>
       </v-container>
     </div>
-
-    <v-spacer></v-spacer>
-
-    <!--<maint-data-table-->
-      <!--ref="dataTable"-->
-      <!--formTitle="Application Pages"-->
-      <!--v-bind="{headers, items, deleteItem, submitItem, promptColumn}"-->
-      <!--v-on:edit-item="editItem"-->
-    <!--&gt;</maint-data-table>-->
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+//import axios from 'axios';
 import MaintDataTable from '../component/MaintDataTable.vue';
 import MenuTree from '../component/MenuTree.vue';
 import AlertControl from '../component/Alert'
 import router from '../../router';
 import Helper from '../../modules/helper';
+import AxiosHelper from '../../modules/axiosHelper';
 
 const _ = require('lodash');
 
 const helper = new Helper();
+const axiosHelper = new AxiosHelper();
+
 const emptyTopic = {
   id: undefined,
   name: '',
@@ -158,7 +151,7 @@ const emptyNote = {
   id: undefined,
   topicid: undefined,
   comment: '',
-  note: '',
+  notetext: '',
   tags: [],
   attachments: []
 };
@@ -200,7 +193,6 @@ export default {
     //   this.$store.dispatch('setQuote', _.cloneDeep(emptyRecord));
     // }
     this.initializePage();
-    console.log('mounted');
   },
   computed: {
     // items: {
@@ -281,8 +273,9 @@ export default {
             name: this.topic,
             parentid: this.tmpSubTopicId
           };
+          // add topic
           console.log(`*** add topic: ${JSON.stringify(topicRecord)}`);
-          axios.post(`${this.$store.getters.serverUrl}/notes/topics`, topicRecord, this.requestHeaders)
+          axiosHelper.post('/notes/topics', topicRecord)
             .then((response) => {
               this.submitNote();
               helper.fetch(this, 'topics', '/notes/topics');
@@ -291,6 +284,8 @@ export default {
               console.log(err);
               this.$refs.alertCtrl.showAlert('error', `Note topic add failed.`);
             });
+        } else {
+          this.submitNote();
         }
       }
     },
@@ -319,6 +314,15 @@ export default {
       //       this.$refs.alertCtrl.showAlert('error', `Quotes update failed.`);
       //     });
       // }
+      this.noteRecord.topicid = this.topic.id;
+      axiosHelper.save('/notes', this.noteRecord)
+        .then((response) => {
+          this.clear();
+          this.$refs.alertCtrl.showAlert('success', 'Note saved.')
+        })
+        .catch((err) => {
+          this.$refs.alertCtrl.showAlert('error', `Note save failed.`);
+        });
     },
     deleteItem: function(idx) {
       const items = this.items;
