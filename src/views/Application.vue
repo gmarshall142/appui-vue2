@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { Form } from 'vue-formio';
+// import { Form } from 'vue-formio';
 
 export default {
   props: ['appid', 'pageid'],
@@ -40,9 +40,9 @@ export default {
       return this.$store.getters.customFormData;
     },
   },
-  components: {
-    formio: Form
-  },
+  // components: {
+  //   formio: Form
+  // },
   methods: {
     onSubmitMethod: function(submission) {
       console.log(submission);
