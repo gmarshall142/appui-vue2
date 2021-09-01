@@ -131,7 +131,7 @@
 </template>
 
 <script>
-import downloadexcel from 'vue-json-excel';
+import DownloadExcel from 'vue-json-excel';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 
@@ -142,7 +142,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 export default {
   name: 'DataTable',
   components: {
-    downloadexcel
+    'download-excel': DownloadExcel
   },
   props: {
     formTitle: String,

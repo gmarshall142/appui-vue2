@@ -6,7 +6,7 @@
           <h1>Notes List</h1>
         </v-flex>
         <v-flex xs2 class="text-xs-right">
-          <v-btn @click="addQuote">Add Quote</v-btn>
+          <v-btn @click="addNote">Add Note</v-btn>
         </v-flex>
       </v-layout>
     </div>
@@ -32,6 +32,7 @@
   import AlertControl from '../component/Alert'
   import router from '../../router';
   import AxiosHelper from "../../modules/axiosHelper";
+  import bus from "../../modules/bus";
 
   const _ = require('lodash');
   const axiosHelper = new AxiosHelper();
@@ -54,7 +55,7 @@
       return {
         headers: [
           { text: 'ID', value: 'id'},
-          { text: 'Topic', value: 'topic'},
+          { text: 'Topic', value: 'topicname'},
           { text: 'Comment', value: 'comment' },
           { text: 'Note', value: 'notetext' },
           { text: 'Tags', value: 'tags' }
@@ -92,6 +93,12 @@
       MenuTree,
       alertctl: AlertControl,
     },
+    created: function() {
+      bus.$on('app-login-change', this.loginChangeHandler);
+    },
+    beforeDestroy: function() {
+      bus.$off('app-login-change', this.loginChangeHandler);
+    },
     mounted() {
       this.initializePage();
       console.log('mounted');
@@ -102,43 +109,51 @@
       },
     },
     methods: {
+      loginChangeHandler: function() {
+        console.log(`************* loginChangeHandler`);
+      },
       initializePage: function() {
         this.fetchNotes();
       },
       fetchNotes: function() {
         axiosHelper.get('/notes')
           .then((response) => {
-            this.items = response.data;
+            // this.items = response.data;
+            this.items = [];
+            _.forEach(response.data, (it) => {
+              const itm = it;
+              itm.topicname = it.topic.name;
+              this.items.push(itm);
+            })
           })
           .catch((err) => {
-            console.log(err.response.data);
             this.$refs.alertCtrl.showAlert('error', 'Quotes request failed.');
           });
       },
-      fetchApps: function() {
-        axiosHelper.get('/applications')
-          .then((response) => {
-            this.apps = response.data;
-          })
-          .catch((err) => {
-            console.log(err.response.data);
-          });
-      },
-      fetchRows: function(e) {
-        this.clear();
-        this.items = [];
-        this.appId = e;
-        axiosHelper.get(`/pages/app/${e}`)
-          .then((response) => {
-            this.items = response.data;
-          })
-          .catch((err) => {
-            console.log(err.response.data);
-          });
-      },
-      addQuote() {
-        this.$store.dispatch('setQuote', {});
-        router.push('/apps/quotemaint');
+      // fetchApps: function() {
+      //   axiosHelper.get('/applications')
+      //     .then((response) => {
+      //       this.apps = response.data;
+      //     })
+      //     .catch((err) => {
+      //       console.log(err.response.data);
+      //     });
+      // },
+      // fetchRows: function(e) {
+      //   this.clear();
+      //   this.items = [];
+      //   this.appId = e;
+      //   axiosHelper.get(`/pages/app/${e}`)
+      //     .then((response) => {
+      //       this.items = response.data;
+      //     })
+      //     .catch((err) => {
+      //       console.log(err.response.data);
+      //     });
+      // },
+      addNote() {
+        this.$store.dispatch('setNote', {});
+        router.push('/apps/notemaint');
       },
       submitItem() {
 
@@ -153,8 +168,8 @@
         // TODO: set store quote and navigate to QuoteMaint
         //this.editRecord = item;
         // this.setEditHasMenuItem();
-        this.$store.dispatch('setQuote', item);
-        router.push('/apps/quotemaint');
+        this.$store.dispatch('setNote', item);
+        router.push('/apps/notemaint');
       },
       getAppItem: function() {
         const appItems = this.$refs.menuTree.getAppItems();
@@ -162,10 +177,10 @@
           return it.appid === this.appId
         });
       },
-      deleteItem: function(idx) {
-        const items = this.items;
-        console.log(`delete in NotesView: ${idx}  id: ${items[idx].id}`);
-        return axiosHelper.delete(`/quotes/${items[idx].id}`)
+      deleteItem: function(item) {
+        // const items = this.items;
+        // console.log(`delete in NotesView: ${idx}  id: ${items[idx].id}`);
+        return axiosHelper.delete(`/notes/${item.id}`)
           .then((response) => {
             const self = this;
             const id = Number(response.data.id);
@@ -174,11 +189,10 @@
               return it.id === id;
             });
             self.items = this.updateItems(self);
-            this.$refs.alertCtrl.showAlert('success', 'Quote deleted.');
+            this.$refs.alertCtrl.showAlert('success', 'Note deleted.');
           })
           .catch((err) => {
-            console.log(err);
-            this.$refs.alertCtrl.showAlert('error', 'Delete failed.');
+            this.$refs.alertCtrl.showAlert('error', 'NOte failed.');
           });
       },
       updateItems: function(self) {

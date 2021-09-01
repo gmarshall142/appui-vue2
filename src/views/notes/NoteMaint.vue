@@ -17,9 +17,9 @@
     <div style="margin: 20px 20px">
       <v-container fluid grid-list-md text-xs-center>
         <v-form v-model="valid" ref="form">
-          <v-layout row wrap>
+          <v-row class="layout">
             <!-- Note Topics -->
-            <v-flex xs6>
+            <v-col cols="6">
               <v-combobox
                 v-model="topic"
                 :items="topics"
@@ -30,8 +30,8 @@
                 clearable
                 @change="handleTopicChange"
               ></v-combobox>
-            </v-flex>
-            <v-flex xs6>
+            </v-col>
+            <v-col cols="6">
               <v-select
                 v-model="topicRecord.parentid"
                 :items="topics"
@@ -41,87 +41,74 @@
                 clearable
                 :disabled="parentTopicDisabled"
               ></v-select>
-            </v-flex>
-          </v-layout>
-          <v-layout row wrap>
+            </v-col>
+          </v-row>
+          <v-row class="layout">
             <!-- ID, Comment -->
-            <v-flex xs2 class="text-xs-left">
-              <v-card-text class="text-xs-left" style="height: 50%; vertical-align: middle;">ID:&nbsp;&nbsp;&nbsp;&nbsp;{{noteRecord.id}}</v-card-text>
-            </v-flex>
-            <v-flex xs10>
+            <v-col cols="2" class="text-xs-left">
+              <v-card-text class="text-xs-left" style="height: 50%; vertical-align: middle;">ID:&nbsp;&nbsp;&nbsp;&nbsp;{{note.id}}</v-card-text>
+            </v-col>
+            <v-col cols="10">
               <v-text-field
                 label="Comment"
-                v-model="noteRecord.comment"
+                v-model="note.comment"
               ></v-text-field>
-            </v-flex>
-          </v-layout>
-          <v-layout row wrap>
+            </v-col>
+          </v-row>
+          <v-row class="layout">
             <!-- Note -->
-            <v-flex xs12 class="text-xs-left">
+            <v-col cols="12" class="text-xs-left">
               <v-textarea
                 label="Note"
-                v-model="noteRecord.notetext"
+                v-model="note.notetext"
                 :rules="rules.note"
                 required
                 rows="3"
               ></v-textarea>
-            </v-flex>
-          </v-layout>
-          <v-layout row wrap>
-            <v-flex xs6>
-              <!-- Tags -->
-              <v-text-field
-                label="Tags"
-                v-model="tagStr"
-              ></v-text-field>
-            </v-flex>
-            <!--<v-flex xs1 />-->
-            <v-flex xs6>
-              <!-- Attachments -->
-              <v-select
-                :items="noteRecord.attachments"
-                label="Attachments"
+            </v-col>
+          </v-row>
+          <!-- Tags -->
+          <v-row class="layout">
+            <v-col cols="12">
+              <v-combobox
+                v-model="tagModel"
+                :items="tags"
                 item-text="name"
                 item-value="id"
+                label="Tags"
+                small-chips
+                multiple
                 clearable
-              ></v-select>
-            </v-flex>
-          </v-layout>
-          <v-layout row wrap>
-            <v-flex xs5>
-              <!-- Source -->
-              <!--<v-text-field-->
-                <!--label="Source"-->
-                <!--v-model="quote.source"-->
-              <!--&gt;</v-text-field>-->
-            </v-flex>
-            <v-flex xs2 />
-            <v-flex xs5>
-              <!-- Graphic URL -->
-              <!--<v-text-field-->
-                <!--label="Graphic URL"-->
-                <!--v-model="quote.graphic_url"-->
-              <!--&gt;</v-text-field>-->
-            </v-flex>
-          </v-layout>
-          <v-layout row wrap>
-            <v-flex xs12>
-              <!-- Comment -->
-              <!--<v-textarea-->
-                <!--label="Comment"-->
-                <!--v-model="quote.comment"-->
-                <!--:rules="comment"-->
-                <!--required-->
-                <!--rows="1"-->
-              <!--&gt;</v-textarea>-->
-            </v-flex>
-          </v-layout>
-          <v-layout row wrap>
-            <v-flex xs11 class="text-xs-left">
+                dense
+                hide-selected
+              ></v-combobox>
+            </v-col>
+          </v-row>
+          <!-- Attachments -->
+          <v-row class="layout">
+            <v-col cols="6">
+              <template>
+                <v-card
+                  class="mx-auto"
+                  tile
+                >
+                  <v-list-item v-for="na in noteattachments">
+                      <a :href="na.attachment.href">{{na.attachment.name}}</a>
+                      <v-spacer></v-spacer>
+                      <v-icon class="attachment-delete" @click="handleDelete(na)">delete</v-icon>
+                  </v-list-item>
+                </v-card>
+              </template>            </v-col>
+            <v-col cols="6">
+              <v-file-input v-model="files" multiple small-chips label="Attachments"></v-file-input>
+            </v-col>
+          </v-row>
+          <v-row class="layout">
+            <v-col cols="11" class="text-xs-left">
               <v-btn class="form-button" :disabled="!valid" @click="submit">Submit</v-btn>
               <v-btn class="form-button" @click="clear">Clear</v-btn>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
         </v-form>
       </v-container>
     </div>
@@ -162,10 +149,13 @@ export default {
     topic: undefined,
     tmpSubTopicId: undefined,
     topics: [],
-    noteRecord: _.cloneDeep(emptyNote),
+    note: _.cloneDeep(emptyNote),
     topicRecord: _.cloneDeep(emptyTopic),
     tagStr: undefined,
     items: [],
+    tagModel: undefined,
+    tags: [],
+    files: [],
     valid: true,
     rules: {
       required: [value => !!value || 'Required.'],
@@ -193,36 +183,30 @@ export default {
     //   this.$store.dispatch('setQuote', _.cloneDeep(emptyRecord));
     // }
     this.initializePage();
+    // check for edit note
+    this.note = this.$store.getters.note;
+    this.setTopic();
   },
   computed: {
-    // items: {
-    //   get() {
-    //     return this.items;
-    //   },
-    //   set(value) {
-    //     console.log('------------- items.set');
-    //     this.items = value;
-    //   }
-    // },
-    // quote() {
-    //   return this.$store.getters.quote;
-    // },
-    // parentTopicId: {
-    //   get() {
-    //     if (this.topic === undefined || this.topic === null) {
-    //       return undefined;
-    //     } if (typeof(this.topic) === 'string') {
-    //       return this.tmpSubTopicId;
-    //     } else {
-    //       return this.topic.parentid;
-    //     }
-    //   },
-    //   set(value) {
-    //     if (typeof(this.topic === 'string')) {
-    //       this.tmpSubTopicId = value;
-    //     }
-    //   }
-    // },
+    noteattachments: {
+      get() {
+        //return this.note.noteattachments;
+        const ret = _.cloneDeep(this.note.noteattachments);
+        _.forEach(ret, it => {
+          const fnd = _.find(it.attachment.links, link => {
+            return link.type === 'GET';
+          });
+          if(fnd) {
+            it.attachment.href = fnd.href;
+          }
+        });
+        return _.sortBy(ret, ['attachment.name']);
+      },
+      // set(value) {
+      //   console.log('------------- items.set');
+      //   this.items = value;
+      // }
+    },
     formEnabled() {
       return this.appId === undefined;
     },
@@ -238,9 +222,8 @@ export default {
   },
   methods: {
     initializePage: function() {
-      //this.fetchApps();
       helper.fetch(this, 'topics', '/notes/topics');
-      // helper.fetch(this, 'formats', '/quotes/formats');
+      this.fetchTags();
     },
     handleTopicChange(e) {
       if(e === null) e = undefined;
@@ -256,73 +239,104 @@ export default {
           break;
       }
     },
+    handleDelete(item) {
+      console.log(`delete: ${JSON.stringify(item)}`);
+      // this.deleteIndex = this.items.indexOf(item);
+      // this.dialog = true;
+    },
+    fetchTags: function() {
+      helper.asyncFetch('/master/tags', this)
+      .then((resp) => {
+        this.tags = resp.data;
+        this.setTagsModel();
+      })
+    },
     showList() {
-      router.push('/apps/quoteslist');
+      router.push('/apps/noteslist');
     },
     clear() {
       this.$refs.form.reset();
-      // this.editIndex = -1;
-      // this.editRecord = _.cloneDeep(emptyRecord);
-      // this.$store.dispatch('setQuote', _.cloneDeep(emptyRecord));
+      this.note = _.cloneDeep(emptyNote);
+      this.topicRecord = _.cloneDeep(emptyTopic);
+    },
+    setTopic() {
+      if(this.note.topicid) {
+        axiosHelper.get(`/notes/topics/${this.note.topicid}`)
+          .then((resp) => {
+            this.topicRecord = resp.data;
+            this.topic = resp.data.name;
+          })
+      }
+    },
+    setTagsModel() {
+      this.tagModel = [];
+      _.forEach(this.note.tags, it => {
+        const fnd = _.find(this.tags, tag => tag.id === it);
+        if(fnd) this.tagModel.push(fnd);
+      });
     },
     submit() {
       if (this.$refs.form.validate()) {
         // check note topic
+        // if(!this.note.topic) {
         if (typeof(this.topic) === 'string') {
           const topicRecord = {
             name: this.topic,
             parentid: this.tmpSubTopicId
           };
-          // add topic
-          console.log(`*** add topic: ${JSON.stringify(topicRecord)}`);
+          this.note.topicRecord = this.topicRecord;
           axiosHelper.post('/notes/topics', topicRecord)
             .then((response) => {
-              this.submitNote();
+              //this.submitNote();
+              this.topicRecord = response.data;
               helper.fetch(this, 'topics', '/notes/topics');
             })
             .catch((err) => {
               console.log(err);
               this.$refs.alertCtrl.showAlert('error', `Note topic add failed.`);
             });
-        } else {
-          this.submitNote();
+        // } else {
+        //   this.submitNote();
         }
+        this.submitNote();
       }
     },
     submitNote() {
       console.log(`*** Submit note`);
-      // if (this.quote.id === undefined) {
-      // add --------------------
-      // axios.post(`${this.$store.getters.serverUrl}/quotes`, this.quote, this.requestHeaders)
-      //   .then((response) => {
-      //     this.clear();
-      //     this.$refs.alertCtrl.showAlert('success', 'Quote added.')
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //     this.$refs.alertCtrl.showAlert('error', `Quotes add failed.`);
-      //   });
-      // } else {
-      // update -----------------
-      //   axios.put(`${this.$store.getters.serverUrl}/quotes/${this.quote.id}`, this.quote, this.requestHeaders)
-      //     .then((response) => {
-      //       this.clear();
-      //       this.$refs.alertCtrl.showAlert('success', 'Quote updated.')
-      //     })
-      //     .catch((err) => {
-      //       console.log(err);
-      //       this.$refs.alertCtrl.showAlert('error', `Quotes update failed.`);
-      //     });
-      // }
-      this.noteRecord.topicid = this.topic.id;
-      axiosHelper.save('/notes', this.noteRecord)
-        .then((response) => {
+      this.note.topicid = this.topic.id;
+      this.note.tagModel = this.tagModel;
+      let formData = new FormData();
+      formData.append('note', JSON.stringify(this.note));
+      _.forEach(this.files, file => formData.append('files', file, file.name));
+      const recordUrl = this.note.id ? `/${this.note.id}` : '';
+      const fullUrl = `${this.$store.getters.serverUrl}/notes${recordUrl}`;
+      axiosHelper.request({
+        method: (this.note.id ? 'put' : 'post'),
+        url: fullUrl,
+        data: formData
+      })
+        .then(() => {
           this.clear();
           this.$refs.alertCtrl.showAlert('success', 'Note saved.')
         })
-        .catch((err) => {
+        .catch(() => {
           this.$refs.alertCtrl.showAlert('error', `Note save failed.`);
         });
+      // axiosHelper.save('/notes', formData)
+      //   .then((response) => {
+      //     this.clear();
+      //     this.$refs.alertCtrl.showAlert('success', 'Note saved.')
+      //   })
+      //   .catch((err) => {
+      //     this.$refs.alertCtrl.showAlert('error', `Note save failed.`);
+      //   });
+      // axiosHelper.post('/files/upload', formData)
+      //   .then(response => {
+      //     console.log(`response: ${response}`);
+      //   })
+      //   .catch(error => {
+      //     console.log(error);
+      //   })
     },
     deleteItem: function(idx) {
       const items = this.items;
@@ -357,4 +371,6 @@ export default {
   .container.grid-list-md .layout .flex
     padding-left 10px
     padding-right 10px
+  .attachment-delete
+    text-align right
 </style>

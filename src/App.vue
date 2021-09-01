@@ -109,10 +109,10 @@ import MenuItem from './components/MenuItem.vue';
 // import { BaseComponent } from 'formiojs';
 // import { CustomComponent } from './components/form_components/customcomponent/CustomComponent.js';
 // const CustomComponent = require('./components/form_components/customcomponent/CustomComponent');
-import axios from 'axios';
 import AxiosHelper from './modules/axiosHelper';
+import bus from './modules/bus';
 // Import the Auth0 configuration
-import { domain, clientId, audience } from '../auth_config.json';
+//import { domain, clientId, audience } from '../auth_config.json';
 
 const axiosHelper = new AxiosHelper();
 
@@ -179,6 +179,7 @@ export default {
       if(!this.$auth.loading) {
         this.$auth.loginWithRedirect();
         this.fetchMenu();
+        bus.$emit('apps-login-change');
       }
     },
     logout() {

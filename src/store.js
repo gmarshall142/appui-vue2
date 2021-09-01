@@ -33,6 +33,7 @@ export default new Vuex.Store({
     },
     // quotes: [],
     quote: {},
+    note: {}
   },
   getters: {
     serverUrl: state => state.serverUrl,
@@ -45,8 +46,8 @@ export default new Vuex.Store({
     formBuilderAppId: state => state.formBuilder.appid,
     formBuilderPageId: state => state.formBuilder.pageid,
     formBuilderFormId: state => state.formBuilder.formid,
-    // fetchNotes: state => state.quotes,
     quote: state => state.quote,
+    note: state => state.note
   },
   mutations: {
     devMode: (state, payload) => {
@@ -89,9 +90,8 @@ export default new Vuex.Store({
     SETFORMBUILDERFORM: (state, payload) => {
       state.formBuilder = payload;
     },
-    QUOTE: (state, payload) => {
-      state.quote = payload;
-    }
+    QUOTE: (state, payload) => { state.quote = payload; },
+    NOTE: (state, payload) => { state.note = payload; }
   },
   actions: {
     devMode: (context, payload) => {
@@ -236,6 +236,9 @@ export default new Vuex.Store({
     },
     setQuote: (context, payload) => {
       context.commit('QUOTE', payload);
+    },
+    setNote: (context, payload) => {
+      context.commit('NOTE', payload);
     },
     setRestUrl: (context, payload) => { context.commit('REST_URL', payload); },
     devLogin: (context, payload) => {
