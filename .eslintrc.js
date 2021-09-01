@@ -18,7 +18,8 @@ module.exports = {
     "space-before-function-paren": "off",
     "prefer-destructuring": "off",
     "keyword-spacing": "off",
-    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }]
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "no-empty": ["error", { "allowEmptyCatch": true }]
   },
   parserOptions: {
     parser: 'babel-eslint'
